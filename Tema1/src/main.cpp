@@ -9,11 +9,23 @@ namespace tema1
 
         private:
         int age;
-        int salary;
+        int salary = 0;
         int taxes = 300;
 
         public:
-        Person(std::string n, int a, int s)
+        // multiple constructors to initialize different attributes
+        Person()
+        {
+
+        }
+
+        Person(std::string n, int a)
+        {
+            name = n;
+            age = a;
+        }
+
+        Person(std::string n, int a, int s) // overloading
         {
             name = n;
             age = a;
@@ -43,12 +55,17 @@ using namespace tema1;
 
 int main()
 {
+    Person p0;
+    std::cout << "This is my name: " << p0.name << std::endl; // won't print anything for name since it was not initialized!
+
     Person p1("Alice", 30, 1200);
+    Person p2("Mike", 25); // still okey since we have a constructor
 
     p1.name = "Bob"; // users of the class should not be able to change the attributer directly, it breaks encapsulation
     //p1.age = 10; // gives error
     p1.setAge(20); // the correct way to do it
 
     p1.display();
+    p2.display();
     return 0;
 }
