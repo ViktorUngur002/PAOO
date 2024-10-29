@@ -44,6 +44,7 @@ namespace tema1
             *height = h;
         }
 
+        //custom destructor
         ~Person()
         {
             //stack is cleaned automatically, heap is cleaned manually
@@ -52,14 +53,41 @@ namespace tema1
             // also file handles or network connections can be closed in the destructor
         }
 
+        //custom copy constructor
+        Person(const Person& otherPerson)
+        {
+            height = (double*)malloc(sizeof(double)); //allocates another addres for the new object - deep copy
+            *height = *(otherPerson.height);
+        }
+
         void setAge(int newAge)
         {
             age = newAge;
         }
 
+        int getAge()
+        {
+            return age;
+        }
+
+        void setHeight(double newHeight)
+        {
+            *height = newHeight;
+        }
+
+        double getHeight()
+        {
+            return *height;
+        }
+
         void display() // made public should be used by everyone 
         {
             std::cout << "Name: " << name << "\nAge: " << age << "\nSalary: " << salary << std::endl;
+        }
+
+        void fullInfo()
+        {
+            std::cout << "Name: " << name << "\nAge: " << age << "\nSalary: " << salary << "\nHeight:" << *height << std::endl;
         }
 
         private:
@@ -97,5 +125,31 @@ int main()
 
     Person* p3 = new Person("Johnny", 45);
     delete p3; //the destructor is called explicitly
+    
+
+    //Exemplification of copy constructor
+    std::cout << "-------------------Copy constructor---------------" << std::endl;
+    Person p4("Betty", 34, 2300, 173.2);
+    //Person p5("Emma", 34, 2600, 178.2);
+
+    //p5 = p4; // this is an asignement, won't call the copy constructor
+
+    Person p5 = p4; //in this way you call the copy-constructor (p4 is the otherPerson)
+
+    p4.fullInfo();
+    p5.fullInfo();
+
+    //here both p4 and p5 store the same memory address for the allocated attribure here is an example
+
+    p4.setAge(44); // in this case the age will be chnaged only for P4
+    std::cout << "P4 age: " << p4.getAge() << std::endl;
+    std::cout << "P5 age: " << p5.getAge() << std::endl;
+
+    p4.setHeight(170.8); // but in this case the height will be changed for both P4 and P5, shallow copy
+    std::cout << "P4 height: " << p4.getHeight() << std::endl;
+    std::cout << "P5 height: " << p5.getHeight() << std::endl;
+
+    exit(1);// another problem arises if we didn't have this exit() both destructors would've called free on the same address 
+
     return 0;
 }
