@@ -97,6 +97,63 @@ namespace tema1
         }
 
     };
+
+    // Move constructor example
+    class Car
+    {
+        private:
+        std::string* parts;
+        int partsCount;
+
+        public:
+        Car(int count)
+        {
+            partsCount = count;
+            parts = new std::string[count];
+            for(int i = 0; i<count; i++)
+            {
+                parts[i] = "Part " + std::to_string(i+1);
+            }
+
+        }
+
+        // using a copy constructor to perform deep copy
+        Car(const Car& otherCar)
+        {
+            std::cout << "Copied car" << std::endl;
+            partsCount = otherCar.partsCount;
+            parts = new std::string[partsCount]; //this line is problematic, we don't want to allocate memory on heap twice!
+            for(int i = 0; i<partsCount; i++)
+            {
+                parts[i] = otherCar.parts[i];
+            }
+        }
+
+        //move constructor
+        Car(Car&& otherCar) noexcept
+        {
+            std::cout << "Moved car" << std::endl;
+            parts = otherCar.parts;
+            partsCount = otherCar.partsCount; //here we basically steal the data from the otherCar
+
+            //but we also need to do this part, so that when the destructor is called on otherCar we don't loose our data
+            //because we stole otherCar's data from its head address
+            otherCar.parts = nullptr;
+            otherCar.partsCount = 0;
+        }
+
+        //destructor
+        ~Car()
+        {
+            std::cout << "Destroyed car" << std::endl;
+            delete[] parts;
+        }
+
+        int getCount()
+        {
+            return partsCount;
+        }
+    };
 } // namespace tema1
 
 using namespace tema1;
@@ -105,6 +162,11 @@ void testDestructor()
 {
     Person p("John", 23);
 } // destructor called here, after the program terminates
+
+void transferOwnership(Car car)
+{
+    std::cout << "Transfering ownership" << std::endl;
+}
 
 int main()
 {
@@ -148,6 +210,15 @@ int main()
     p4.setHeight(170.8); // but in this case the height will be changed for both P4 and P5, shallow copy
     std::cout << "P4 height: " << p4.getHeight() << std::endl;
     std::cout << "P5 height: " << p5.getHeight() << std::endl;
+
+    //Exemplification of move constructor
+    std::cout << "-------------------Move constructor---------------" << std::endl;
+
+    Car c1(5);
+    transferOwnership(c1);
+    transferOwnership(std::move(c1)); //we need to either cast it as a temporaly (Car &&) or use std::move 
+
+    std::cout << c1.getCount() << std::endl; //here we can see that out data moved from c1
 
     exit(1);// another problem arises if we didn't have this exit() both destructors would've called free on the same address 
 
