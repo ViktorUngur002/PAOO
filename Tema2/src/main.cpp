@@ -84,6 +84,30 @@ namespace tema2
         }
     };
 
+    class Silent
+    {
+        //here I will provide the constructors C++ silently writes and calls
+        public:
+            // these (without cout) are called if let the class empty, usage in main
+            Silent()
+            {
+                std::cout << "The default contstructor" << std::endl;
+            }
+            ~Silent()
+            {
+                std::cout << "The destructor" << std::endl;
+            }
+            Silent(const Silent& s)
+            {
+                std::cout << "The copy contstructor" << std::endl;
+            }
+            Silent& operator = (const Silent& s)
+            {
+                std::cout << "The copy assignment operator" << std::endl;
+                return *this;
+            }
+    };
+
 }
 
 using namespace tema2;
@@ -109,6 +133,14 @@ int main()
     std::cout << "--------------------------------------------------------" << std::endl;
     
     Book b3("Title 2");
+
+    std::cout << "-------------------------Examples of silently called function---------------------" << std::endl;
+
+    // neither of them are explicitly called by me
+    Silent s1;
+
+    Silent s2(s1);
+    s2 = s1;
 
     return 0;
 }
