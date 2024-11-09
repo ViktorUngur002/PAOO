@@ -108,6 +108,46 @@ namespace tema2
             }
     };
 
+    // by inheriting this class we move the error to compile time
+    class Uncopyable {
+        protected:
+            Uncopyable() {} 
+            ~Uncopyable() {}
+        private:
+            Uncopyable(const Uncopyable&);
+            Uncopyable& operator=(const Uncopyable&);
+    };
+
+    // we want to declare a class of unique 1 of 1 watches, these should not have copy constructor or operator
+    // defined, but because they are defined by default we need to set them as private 
+    class UniqueWatch: private Uncopyable
+    {
+        public:
+            UniqueWatch()
+            {
+                std::cout << "A unique watch was created!" << std::endl;
+            }
+
+            //member function
+            void copyWatchMember(const UniqueWatch& otherWatch)
+            {
+                *this = otherWatch;
+            }
+
+            //friend function
+            friend void copyWatchFriend(UniqueWatch& dest, const UniqueWatch& src)
+            {
+                dest = src;
+            }
+        
+        //when done this way, and we try to perform copy in a member or a friend function we will get a link error
+        
+        /*private:
+            UniqueWatch(const UniqueWatch&); 
+            UniqueWatch& operator=(const UniqueWatch&);
+        */
+    };
+
 }
 
 using namespace tema2;
@@ -141,6 +181,14 @@ int main()
 
     Silent s2(s1);
     s2 = s1;
+
+    std::cout << "-------------------------Examples of disallowing silent dunctions---------------------" << std::endl;
+
+    UniqueWatch w1;
+    UniqueWatch w2;
+
+    copyWatchFriend(w1, w2);
+    w1.copyWatchMember(w2);
 
     return 0;
 }
