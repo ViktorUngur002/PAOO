@@ -56,6 +56,9 @@ namespace tema1
         //custom copy constructor
         Person(const Person& otherPerson)
         {
+            name = otherPerson.name;
+            age = otherPerson.age;
+            salary = otherPerson.salary;
             height = (double*)malloc(sizeof(double)); //allocates another addres for the new object - deep copy
             *height = *(otherPerson.height);
         }
@@ -137,7 +140,7 @@ namespace tema1
             partsCount = otherCar.partsCount; //here we basically steal the data from the otherCar
 
             //but we also need to do this part, so that when the destructor is called on otherCar we don't loose our data
-            //because we stole otherCar's data from its head address
+            //because we stole otherCar's data from its heap address
             otherCar.parts = nullptr;
             otherCar.partsCount = 0;
         }
