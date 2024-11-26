@@ -90,6 +90,56 @@ namespace tema3 {
     
     };
 
+    // here we will discuss the problem that appears when modifying default copy functions,
+    // and how you need to constantly modify them when adding new attributes
+    class Employee
+    {
+        private:
+            std::string name;
+        
+        public:
+            Employee(std::string n):name(name)
+            {}
+
+            Employee(const Employee& e)
+            {
+                name = e.name;
+            }
+
+            Employee& operator=(const Employee& e)
+            {
+                name = e.name;
+                return *this;
+            }
+    };
+
+    class HeadEmployee: public Employee
+    {
+        private:
+            int specialCardNumber;
+
+        public:
+            HeadEmployee(std::string n, int scn):
+            Employee(n),
+            specialCardNumber(scn)
+            {}
+
+            // when we are rewriting copying functions we should make sure that:
+            //  1. we copy all local data members
+            //  2. invoke the appropriate copy functions from base classes 
+        HeadEmployee(const HeadEmployee& e) : 
+            Employee(e), 
+            specialCardNumber(e.specialCardNumber) 
+            {}
+
+        // Correct assignment operator for HeadEmployee
+        HeadEmployee& operator=(const HeadEmployee& e) {
+            Employee::operator=(e); // Call the base class assignment operator
+            specialCardNumber = e.specialCardNumber;
+            return *this;
+        }
+    };
+
 }
 
 using namespace tema3;
