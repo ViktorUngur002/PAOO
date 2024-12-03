@@ -98,7 +98,7 @@ namespace tema3 {
             std::string name;
         
         public:
-            Employee(std::string n):name(name)
+            Employee(std::string n):name(n)
             {}
 
             Employee(const Employee& e)
@@ -110,6 +110,11 @@ namespace tema3 {
             {
                 name = e.name;
                 return *this;
+            }
+
+            void print()
+            {
+                std::cout << name << std::endl;
             }
     };
 
@@ -138,6 +143,12 @@ namespace tema3 {
             specialCardNumber = e.specialCardNumber;
             return *this;
         }
+
+        void print()
+        {
+            Employee::print();
+            std::cout << specialCardNumber << std::endl;
+        }
     };
 
 }
@@ -154,6 +165,14 @@ int main()
 
     //std::cout << p2 << std::endl;
     std::cout << p << std::endl;
+    
+    //Last item
+
+    HeadEmployee h1("Mike", 1234);
+    HeadEmployee h2(h1);
+
+    h1.print();
+    h2.print();
 
     return 0;
 }
