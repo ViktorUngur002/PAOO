@@ -31,6 +31,58 @@ namespace tema4
         Dog* d = new Dog("Fluffy", 5);
         return d;
     }
+    
+    class Mutex
+    {
+
+    };
+
+    // class when inherited blocks copying for child class
+    class Uncopyable {
+        protected:
+            Uncopyable() {} 
+            ~Uncopyable() {}
+        private:
+            Uncopyable(const Uncopyable&);
+            Uncopyable& operator=(const Uncopyable&);
+    };
+
+    // lock managing class
+    // we could block the copying by inheriting Uncopyable
+    // to perform hold on a resource as in the shared_ptr, we need to modify its initialization
+    // since we don't want to delete our resource but to unlock(logic from destructor in Lock)
+    // we could specify a deleter for shared_ptr
+    // this is also handy for lets say when you need to close connections when calling the destructor
+    class Lock/*: private Uncopyable*/
+    {
+        private:
+            //Mutex* mutexPtr;
+            std::tr1::shared_ptr<Mutex> mutexPtr;
+
+            void lock(Mutex* pm)
+            {
+                std::cout << "Locking the mutex." << std::endl;
+            }
+            static void unlock(Mutex* pm)
+            {
+                //unlock logic
+            }
+
+        public:
+            // as we can see this constructor puts a lock on the mutex object
+            explicit Lock(Mutex* pm):mutexPtr(pm, unlock) // now here unlock function is sent as the deleter logic
+            {
+                lock(mutexPtr.get());
+            }
+
+            // and the destructor takes the lock from that object
+            /*
+            ~Lock()
+            {
+                unlock(mutexPtr);
+            }*/
+            // we no longer need the destructor when using shared_ptr
+    };
 }
 
 using namespace tema4;
@@ -69,9 +121,22 @@ void f2()
 
     if(createdDog->getFood() < 10)
     {
-        //now even dought we return here the allocated createdDog will be destroyed
+        // now even dought we return here the allocated createdDog will be destroyed
         return;
     }    
+}
+
+Mutex m;
+void f3()
+{
+    Lock mutexLock1(&m);
+
+    // now we have the question what should happen when a copy is performed?
+    Lock mutexLock2(mutexLock1);
+
+    // we could perform two actions here
+    // either we prohibit copying for objects that this makes sense
+    // or we hold on to a resource until the last object using it has been destroyed - by using shared_ptr
 }
 
 int main()
